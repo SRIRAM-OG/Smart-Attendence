@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  role         String     @default("STUDENT") // STUDENT, TEACHER, ADMIN
+  status       String     @default("ACTIVE")  // ACTIVE, INACTIVE
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  student      Student?
+  teacher      Teacher?
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Department {
+  id        String    @id @default(uuid())
+  name      String
+  code      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  students  Student[]
+  teachers  Teacher[]
+  courses   Course[]
+
+  @@map("departments")
+}
+
+model Student {
+  id               String       @id @default(uuid())
+  userId           String       @unique
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollmentNumber String       @unique
+  departmentId     String
+  department       Department   @relation(fields: [departmentId], references: [id])
+  semester         Int          @default(1)
+  section          String       @default("A")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  enrollments      Enrollment[]
+  attendanceRecords AttendanceRecord[]
+
+  @@map("students")
+}
+
+model Teacher {
+  id           String          @id @default(uuid())
+  userId       String          @unique
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  departmentId String
+  department   Department      @relation(fields: [departmentId], references: [id])
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  teacherCourses TeacherCourse[]
+  sessions       AttendanceSession[]
+
+  @@map("teachers")
+}
+
+model Course {
+  id           String              @id @default(uuid())
+  name         String
+  code         String              @unique
+  departmentId String
+  department   Department          @relation(fields: [departmentId], references: [id])
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  teacherCourses TeacherCourse[]
+  enrollments    Enrollment[]
+  sessions       AttendanceSession[]
+
+  @@map("courses")
+}
+
+model TeacherCourse {
+  id        String   @id @default(uuid())
+  teacherId String
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([teacherId, courseId])
+  @@map("teacher_courses")
+}
+
+model Enrollment {
+  id           String   @id @default(uuid())
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  academicYear String   @default("2025-2026")
+  createdAt    DateTime @default(now())
+
+  @@unique([studentId, courseId, academicYear])
+  @@map("enrollments")
+}
+
+model AttendanceSession {
+  id           String            @id @default(uuid())
+  courseId     String
+  course       Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  teacherId    String
+  teacher      Teacher           @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  sessionDate  DateTime          @default(now())
+  startTime    DateTime          @default(now())
+  endTime      DateTime?
+  qrToken      String?           @unique
+  qrExpiresAt  DateTime?
+  status       String            @default("ACTIVE") // ACTIVE, EXPIRED, CLOSED
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  records      AttendanceRecord[]
+
+  @@map("attendance_sessions")
+}
+
+model AttendanceRecord {
+  id         String            @id @default(uuid())
+  sessionId  String
+  session    AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  timestamp  DateTime          @default(now())
+  status     String            @default("PRESENT") // PRESENT, ABSENT, LATE
+  authMethod String            @default("QR_SCAN")
+
+  @@unique([sessionId, studentId])
+  @@map("attendance_records")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   String?
+  ipAddress String?
+  timestamp DateTime @default(now())
+
+  @@map("audit_logs")
+}

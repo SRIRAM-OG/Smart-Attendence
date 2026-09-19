@@ -1,0 +1,49 @@
+name: smart_attendance_app
+description: "Smart Attendance Mobile App using QR Codes and Role-based Authentication"
+publish_to: 'none'
+version: 2.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  provider: ^6.1.2
+
+  # Networking
+  dio: ^5.4.3+1
+
+  # QR Code Scanning and Generation
+  mobile_scanner: ^5.1.1
+  qr_flutter: ^4.1.0
+
+  # Storage & Security
+  flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.3
+
+  # Routing
+  go_router: ^14.1.4
+
+  # UI Components & Utilities
+  intl: ^0.19.0
+  percent_indicator: ^4.2.3
+  fl_chart: ^0.68.0
+  google_fonts: ^6.2.1
+  cupertino_icons: ^1.0.6
+
+  # 3D Animations & Transitions (NEW)
+  flutter_animate: ^4.5.2
+  flutter_staggered_animations: ^1.1.1
+  shimmer: ^3.0.0
+  animations: ^2.0.11
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
