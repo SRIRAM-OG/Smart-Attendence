@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Smart Attendance App — Architecture & Getting Started
 
 Smart Attendance App is an enterprise-grade digital attendance solution using dynamic time-limited **QR Codes** and role-based authentication (Students, Teachers, Administrators).
@@ -99,3 +100,7 @@ flutter run
 3. **Duplicate Prevention**: Database compound unique constraints `(sessionId, studentId)` strictly prevent multiple attendance submissions.
 4. **Course Enrollment Verification**: Students cannot mark attendance for courses they are not officially enrolled in.
 5. **Real-time Live Polling**: Teachers see student check-ins updating in real time.
+=======
+# Smart-Attendence
+Smart Attendance App is a modern attendance management system that simplifies student attendance tracking, record management, and monitoring. It provides an intuitive dashboard for managing students, subjects, attendance records, and attendance statistics with a responsive and user-friendly interface.
+>>>>>>> 3043feb7bf12bae248da42b767e151b105185f42
